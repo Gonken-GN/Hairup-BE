@@ -39,6 +39,6 @@ const user = db.define('users', {
   sensivity: {
     type: DataTypes.ARRAY,
   },
-});
+}, { freezeTableName: true });
 
 export default user;
