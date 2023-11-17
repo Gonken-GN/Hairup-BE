@@ -10,7 +10,7 @@ const init = () => {
   server.use(cors());
   //   Server initialization
   server.listen(process.env.PORT, () => {
-    console.log(`Serving on port       ${process.env.PORT}`);
+    console.log(`Serving on port${process.env.PORT}`);
   });
 };
 
