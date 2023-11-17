@@ -23,12 +23,12 @@ const db = new Sequelize('hairup', 'root', '', {
 
 /* Uncommand to sync table design */
 
-db.sync({ alter: true })
-  .then(() => {
-    console.log('Tabel berhasil di sinkronisasi');
-  })
-  .catch((error) => {
-    console.error('Terjadi kesalahan:', error);
-  });
+// db.sync({ alter: true })
+//   .then(() => {
+//     console.log('Tabel berhasil di sinkronisasi');
+//   })
+//   .catch((error) => {
+//     console.error('Terjadi kesalahan:', error);
+//   });
 
 export default db;
