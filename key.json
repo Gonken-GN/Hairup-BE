@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "testing-project-404117",
+  "private_key_id": "257bc6b24f2112e8c6401bac5d5b1a2d0f3f69bd",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCuhq/1Qwr2wl7d\n6Yb9C+xc/htnnjrguPRvGrIYbCif7UD+DGaSCiTHwMKcXRA5nTl6wQ3M9Z2a25Mt\nbo9qWFzh67IpbKEDpjw0aTm775hwZO0rZj/dZ4Qrp1OQn1dHLBOXLeCgHTSuUTte\nHH70ZLpkep1tZkya9t1C47hP/fhu3QI5ZEXftlS23GRc/+aSigZ6dKg8Nz3NKdy2\n+KpR3cLVthiAuvzdN72hmkN2E08C4vFwvy/9A0Y27j1/9gLqrFv+2VBuCqvKaYD1\nMUMJLyCpLhRQvZ9EQ/M2SKEQbeqVP/592gn1vkJRVDiZ8eW809UuwDJ8q7jXkHBb\n9zjjs69PAgMBAAECggEAOU+PXpnqcse3QWYbZuNQdeUX+LnUGdGCqy14CF8UJBhT\n/Fj0Icbk9xeMkK5a0qCXrIDS2Fhbreum9AdXXxOvRJ0Sf1nlsf4XzRo01EtEorvx\nyguksz73/yHOZjJ9Bakqsb1mAw40K34PYcM3yWd+cdp18ePjCgxA8mM3NkVvHHA5\nPnbLo6a3IxG+E5q4w+TyfN5XlsXCmusk6YmNGI46/XGzylENHRr97sL5nNnh+W3C\n7j66sF2z3AWYODVdZe7p1XDl+yPqHNggLmCZrHTfVZqbXPYs9k/4lfL3ue2yX1Zq\nZsbtl4YLF9AW7Ak1+cTRUUL7aCOPEKaNE2ptbb1AaQKBgQDs23OL57kDzQgJ/Ufk\ndCB/RRIp6JHEuixqc6P1+xNOqIFYZf0Z9wrM1dEvQ+tqtN1XgDYqQz6UKEA+O+RJ\nLRLBe/T6WtPZW/RDjfUh5cjN4NQzZZT3lomHEHAlTuHPDU/LODJTxgG7KvAb3W+W\nPY+MkdPChg0fhUK8ZJnaU3zJEwKBgQC8oZzQuyoRpQEgGzc/n1Nc0M+/M+Gx1KxY\nhnZ3xD9/ZdTlEzO0aQLm5ut82nUVNvvUufOU7sgC/Bf+aWnpF64K5PjsDR/95mVi\nDwuYhPiIHaEuBH1Qrpv4t1rfTz1hZ2gxHeKQxSuWadXoCdbTsMQJ7GqswlPz/1Bu\nJx5cjRDkVQKBgQDCry6uVG0yvphY/aLWGM2NTsy7PbpzJUPUy/B9Az6/bKnEazA6\n42AxNZ6XZxBdyQQWJABhhJwvU1Za0Qe3TiEYgDbAgV+YTYjc7hYLIsCG2MIS7PAh\nAc9RASXsxIW+loZ711kmmp5ZpdVuUfiiWT9gn4ybW2v1+Kb+CwKa/fyXmQKBgAFY\n1hnXfFFr8Doed6KIrLu48gLXiAERF7n6G9Z3HEz4mTCZloDvTwn/FCdsF/Hy1pGK\nUmb53YvH6RP0BMGZXbDOOcjVvyi9AHRWzypjqLKwI3qEpbBxzsNT6940XqfXaTMQ\nl5GZFtqYHuLtTw9r77pyacCaEqdnZ1eiB+F5UGmRAoGAJE+xhsI/QcL8ylmNxZBU\nBq4vITsPhPjnfjONSS33IqcREJO2IyFPt5ZZzw72ajzQlILSLQFqQZIq3GpPt9pw\nZYDyR5k9NTQSxKfL2jHpwbRunCt9bbMUnoZ4zujQ7CQ7mxc8fOXR/VSq/DxSnQaU\nG4qf9l/wSNI93q+5Pr4R2cA=\n-----END PRIVATE KEY-----\n",
+  "client_email": "hairup-serviceaccount@testing-project-404117.iam.gserviceaccount.com",
+  "client_id": "117925349615958699020",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/hairup-serviceaccount%40testing-project-404117.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
