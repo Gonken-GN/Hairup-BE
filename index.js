@@ -11,7 +11,7 @@ const init = () => {
   server.use(cors());
   server.use('/user', userRouter);
   //   Server initialization
-  server.listen(process.env.PORT, () => {
+  server.listen(process.env.PORT || 8000, () => {
     console.log(`Serving on port ${process.env.PORT}`);
   });
 };

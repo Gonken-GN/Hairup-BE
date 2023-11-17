@@ -2,21 +2,6 @@ import asyncHandler from 'express-async-handler';
 import { deleteObjectByLink, geneteratePublicUrl, uploadFiles } from '../utils/uploadFile.js';
 import User from '../models/user.model.js';
 
-export const testingUpload = async (
-  /** @type import('express').Request */ req,
-  /** @type import('express').Response */ res,
-) => {
-  try {
-    const resUpload = await uploadFiles('package.json');
-    return res.status(200).json({
-      resUpload,
-    });
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-};
-
 export const getUsers = asyncHandler(
   async (
     /** @type import('express').Request */ req,
