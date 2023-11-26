@@ -50,7 +50,6 @@ export const createUser = asyncHandler(
   ) => {
     try {
       if (req.body.files) {
-        await uploadFiles(req.body.files);
         const currentDate = new Date();
         const formattedDate = currentDate.toLocaleDateString('en-GB', {
           year: '2-digit',
@@ -117,6 +116,14 @@ export const deleteUser = asyncHandler(
     /** @type import('express').Response */ res,
   ) => {
     try {
+      const user = await User.findOne({
+        where: {
+          id: req.params.id,
+        },
+      });
+      if (user.avatarUrl) {
+        deleteObjectByLink(user.avatarUrl);
+      }
       await User.destroy({
         where: {
           id: req.params.id,
