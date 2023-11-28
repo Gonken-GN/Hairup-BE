@@ -1,10 +1,10 @@
 import { DataTypes } from 'sequelize';
 import db from '../config/db.config.js';
-import user from './user.model.js';
+import User from './user.model.js';
 
-const rekomendasi = db.define('rekomendasi', {
+const Rekomendasi = db.define('Rekomendasi', {
   id: {
-    type: DataTypes.STRING,
+    type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
     allowNull: false,
     validate: {
@@ -13,10 +13,10 @@ const rekomendasi = db.define('rekomendasi', {
     primaryKey: true,
   },
   userId: {
-    type: DataTypes.STRING,
+    type: DataTypes.UUID,
     allowNull: false,
     references: {
-      model: user,
+      model: User,
       key: 'id',
     },
   },
@@ -33,7 +33,7 @@ const rekomendasi = db.define('rekomendasi', {
 }, { freezeTableName: true });
 
 // Define the relationship
-user.hasMany(rekomendasi, { foreignKey: 'userId' });
-rekomendasi.belongsTo(user, { foreignKey: 'userId' });
-
-export default rekomendasi;
+Rekomendasi.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+// Defining the relationship
+User.hasMany(Rekomendasi, { foreignKey: 'userId', onDelete: 'CASCADE' });
+export default Rekomendasi;

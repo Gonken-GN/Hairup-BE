@@ -1,5 +1,9 @@
 import asyncHandler from 'express-async-handler';
-import { deleteObjectByLink, geneteratePublicUrl, uploadFiles } from '../utils/uploadFile.js';
+import {
+  deleteObjectByLink,
+  geneteratePublicUrl,
+  uploadFiles,
+} from '../utils/uploadFile.js';
 import User from '../models/user.model.js';
 
 export const getUsers = asyncHandler(
@@ -50,15 +54,8 @@ export const createUser = asyncHandler(
   ) => {
     try {
       if (req.body.files) {
-        const currentDate = new Date();
-        const formattedDate = currentDate.toLocaleDateString('en-GB', {
-          year: '2-digit',
-          month: '2-digit',
-          day: '2-digit',
-        });
-
         await uploadFiles(req.body.files);
-        const avatarUrl = geneteratePublicUrl(formattedDate, req.body.files);
+        const avatarUrl = geneteratePublicUrl('package.json');
         const user = await User.create({ ...req.body, avatarUrl });
         res.status(200).json({
           success: true,
@@ -91,15 +88,20 @@ export const updateUser = asyncHandler(
             id: req.params.id,
           },
         });
+        console.log(user.avatarUrl);
         deleteObjectByLink(user.avatarUrl);
-        await user.update(req.body);
+        await uploadFiles(req.body.files);
+        const avatarUrl = geneteratePublicUrl(req.body.files);
+        await user.update({ ...req.body, avatarUrl });
         res.status(200).json({ success: true, user });
+      } else {
+        await User.update(req.body, {
+          where: {
+            id: req.params.id,
+          },
+        });
       }
-      await User.update(req.body, {
-        where: {
-          id: req.params.id,
-        },
-      });
+
       res.status(200).json({ msg: 'User Updated' });
     } catch (error) {
       res.status(500).json({

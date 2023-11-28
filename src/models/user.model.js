@@ -1,14 +1,11 @@
 import { DataTypes } from 'sequelize';
 import db from '../config/db.config.js';
 
-const user = db.define('users', {
+const User = db.define('User', {
   id: {
-    type: DataTypes.STRING,
+    type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
     allowNull: false,
-    validate: {
-      notEmpty: true,
-    },
     primaryKey: true,
   },
   nama: {
@@ -39,6 +36,7 @@ const user = db.define('users', {
   },
   skin_sensivity: {
     type: DataTypes.STRING,
+    defaultValue: null,
   },
   createdAt: {
     type: DataTypes.DATE,
@@ -52,4 +50,4 @@ const user = db.define('users', {
   },
 }, { freezeTableName: true });
 
-export default user;
+export default User;
