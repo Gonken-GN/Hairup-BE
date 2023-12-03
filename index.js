@@ -19,7 +19,7 @@ const init = () => {
     console.log(`Serving on port ${process.env.PORT}`);
   });
   server.get('/', (req, res) => {
-    res.json({ message: 'ok' });
+    res.json({ message: 'okas' });
   });
 };
 
