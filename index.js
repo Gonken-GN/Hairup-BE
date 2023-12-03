@@ -18,6 +18,9 @@ const init = () => {
   server.listen(process.env.PORT || 8000, () => {
     console.log(`Serving on port ${process.env.PORT}`);
   });
+  server.get('/', (req, res) => {
+    res.json({ message: 'ok' });
+  });
 };
 
 init();
