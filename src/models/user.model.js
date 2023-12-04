@@ -34,7 +34,11 @@ const User = db.define('User', {
   avatarUrl: {
     type: DataTypes.STRING,
   },
-  skin_sensivity: {
+  status: {
+    type: DataTypes.STRING,
+    defaultValue: null,
+  },
+  riwayatPenyakit: {
     type: DataTypes.STRING,
     defaultValue: null,
   },
