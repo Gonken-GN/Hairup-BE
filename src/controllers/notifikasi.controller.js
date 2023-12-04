@@ -19,7 +19,7 @@ export const sseController = {
       const message = { timestamp: new Date(), message: 'Hourly update' };
   const formattedMessage = `data: ${JSON.stringify(message)}\n\n`;
   sendToAllClients(formattedMessage);
-    }, 10000);
+    }, 3600000);
     req.on('close', () => {
       removeClient(clientId);
     });
