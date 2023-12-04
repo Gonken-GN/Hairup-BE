@@ -23,7 +23,7 @@ async function getAQI(long, lat) {
       `https://airquality.googleapis.com/v1/currentConditions:lookup?key=${process.env.GOOGLE_API_KEY}`,
       aqiOptions,
     )
-    .then((response) => response.data);
+    .then((response) => response.data).catch((err) => console.log(err));
   return aqi;
 }
 
