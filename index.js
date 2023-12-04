@@ -5,6 +5,7 @@ import * as dotenv from 'dotenv';
 // import route
 import userRouter from './src/routes/user.route.js';
 import rekomendasiRouter from './src/routes/rekomendasi.route.js';
+import notifikasiRouter from './src/routes/notifikasi.route.js';
 
 dotenv.config();
 const init = () => {
@@ -14,6 +15,7 @@ const init = () => {
   // Server routes
   server.use('/user', userRouter);
   server.use('/api', rekomendasiRouter);
+  server.use('/notifikasi', notifikasiRouter);
   //   Server initialization
   server.listen(process.env.PORT || 8000, () => {
     console.log(`Serving on port ${process.env.PORT}`);
