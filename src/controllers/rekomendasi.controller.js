@@ -13,7 +13,7 @@ export const createRekomendasi = asyncHandler(
     /** @type import('express').Response */ res,
   ) => {
     try {
-      const data = await getKabKot(11);
+      // const data = await getKabKot(11);
       const coordinates = await getCoordinates('KABUPATEN ACEH BARAT');
       const aqi = await getAQI(coordinates.lng, coordinates.lat);
       const weather = await getWeather(coordinates.lng, coordinates.lat);
