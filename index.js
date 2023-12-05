@@ -21,7 +21,7 @@ const init = () => {
     console.log(`Serving on port ${process.env.PORT}`);
   });
   server.get('/', (req, res) => {
-    res.json({ message: 'Deployment berhasil' });
+    res.json({ message: 'Deployment berhasil 2023' });
   });
 };
 
