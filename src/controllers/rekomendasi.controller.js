@@ -1,40 +1,55 @@
 import asyncHandler from 'express-async-handler';
-import axios from 'axios';
-import * as dotenv from 'dotenv';
-
-import rekomendasi from '../models/rekomendasi.model.js';
+import cron from 'node-cron';
+import moment from 'moment';
+import { Op } from 'sequelize';
 import { errorResponse } from '../utils/response.js';
 import { getCoordinates, getKabKot, getProvinsi } from '../utils/lokasi.js';
-import { getAQI, getWeather } from '../utils/getAPI.js';
+import {
+  callAQIAPI,
+  callWeatherAPI,
+  getAQI,
+  getWeather,
+} from '../utils/getAPI.js';
+import Rekomendasi from '../models/rekomendasi.model.js';
 
-// export const createRekomendasi = asyncHandler(
-//   async (
-//     /** @type import('express').Request */ req,
-//     /** @type import('express').Response */ res,
-//   ) => {
-//     try {
-//       // const data = await getKabKot(11);
-//       const coordinates = await getCoordinates('KABUPATEN ACEH BARAT');
-//       const aqi = await getAQI(coordinates.lng, coordinates.lat);
-//       const weather = await getWeather(coordinates.lng, coordinates.lat);
-//       res.status(200).json({ coordinates, weather: weather.data, aqi });
-//     } catch (error) {
-//       errorResponse(res, error.message, 500);
-//     }
-//   },
-// );
-
-// export const getAqi = asyncHandler(
-//   async (
-//     /** @type import('express').Request */ req,
-//     /** @type import('express').Response */ res,
-//   ) => {
-//     try {
-//     } catch (error) {
-//       errorResponse(res, error.message, 500);
-//     }
-//   },
-// );
+export const getAqi = asyncHandler(
+  async (
+    /** @type import('express').Request */ req,
+    /** @type import('express').Response */ res,
+  ) => {
+    try {
+      const coordinates = await getCoordinates('KABUPATEN ACEH BARAT');
+      const aqi = await callAQIAPI(coordinates.lng, coordinates.lat);
+      const weather = await callWeatherAPI(coordinates.lng, coordinates.lat);
+      const riwayatPenyakit = 'heartDiseasePopulation';
+      const status = 'pregnant';
+      const recommendation = [];
+      let flag = false;
+      if (aqi) {
+        Object.entries(aqi.healthRecommendations).forEach(([key, value]) => {
+          if (
+            key.toLowerCase().includes(riwayatPenyakit.toLowerCase())
+            || key.toLowerCase().includes(status.toLowerCase())
+          ) {
+            flag = true;
+            recommendation.push(value);
+          }
+        });
+        if (!flag) {
+          recommendation.push(aqi.healthRecommendations.generalPopulation);
+        }
+      }
+      res.status(200).json({
+        coordinates,
+        weather: weather.data,
+        aqi,
+        rekomendasi: recommendation,
+      });
+    } catch (error) {
+      errorResponse(res, error.message, 500);
+    }
+  },
+);
 
 export const getRekomendasi = asyncHandler(
   async (
@@ -42,7 +57,7 @@ export const getRekomendasi = asyncHandler(
     /** @type import('express').Response */ res,
   ) => {
     try {
-      const response = await Rekomendasi.findAll();
+      const response = await Rekomendasi.findOne({ where: { userId: req.params.id } });
       res.status(200).json(response);
     } catch (error) {
       res.status(500).json({
@@ -53,90 +68,37 @@ export const getRekomendasi = asyncHandler(
   },
 );
 
-export const getRekomendasiById = asyncHandler(
-  async (
-    /** @type import('express').Request */ req,
-    /** @type import('express').Response */ res,
-  ) => {
-    try {
-      const user = await Rekomendasi.findOne({
-        where: {
-          id: req.params.id,
-        },
-      });
-      res.status(200).json({
-        success: true,
-        user,
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  },
-);
-
-// export const createRekomendasi2 = asyncHandler(
-//   async (
-//     /** @type import('express').Request */ req,
-//     /** @type import('express').Response */ res,
-//   ) => {
-//     try {
-//       if (req.body.files) {
-//         const umur = await Umur.create('package.json');
-//         const user = await User.create({ ...req.body, avatarUrl });
-//         res.status(200).json({
-//           success: true,
-//           user,
-//         });
-//       }
-//       const user = await User.create(req.body);
-//       res.status(200).json({
-//         success: true,
-//         user,
-//       });
-//     } catch (error) {
-//       res.status(500).json({
-//         success: false,
-//         message: error.message,
-//       });
-//     }
-//   },
-// );
-
-// export const createRekomendasi1 = asyncHandler(
-//   async (
-//     /** @type import('express').Request */ req,
-//     /** @type import('express').Response */ res,
-//   ) => {
-//     try {
-//       const age = await getUmur();
-//     } catch (error) {
-//       errorResponse(res, error.message, 500);
-//     }
-//   },
-// );
-
 export const createRekomendasi = asyncHandler(
   async (
     /** @type import('express').Request */ req,
     /** @type import('express').Response */ res,
   ) => {
     try {
-      const { umur } = req.body;
-      const { status, riwayatPenyakit } = req.body;
-      if (status === 'pregnant' || status === 'athletes') {
-        res.status(200).json(status);
-      } else if (
-        riwayatPenyakit === 'Heart Disease' || riwayatPenyakit === 'Lung Disease') {
-        res.status(200).json(riwayatPenyakit);
+      const {
+        waktuKeluar, durasi, lokasi, status,
+      } = req.body;
+      const { id } = req.params;
+      const coordinates = await getCoordinates(lokasi);
+      const aqi = getAQI();
+      const weather = getWeather();
+      const rekomendasi = await Rekomendasi.findOne({ where: { userId: id } });
+      if (rekomendasi) {
+        await Rekomendasi.update(
+          {
+            userId: id,
+          },
+          { where: { userId: id } },
+        );
+        res.status(200).json({ rekomendasi });
+      } else {
+        const response = await Rekomendasi.create({ userId: id });
+        res.status(200).json({ response });
       }
     } catch (error) {
       errorResponse(res, error.message, 500);
     }
   },
-); 1;
+);
 
 export const deleteRekomendasi = asyncHandler(
   async (
@@ -144,14 +106,9 @@ export const deleteRekomendasi = asyncHandler(
     /** @type import('express').Response */ res,
   ) => {
     try {
-      const user = await Rekomendasi.findOne({
-        where: {
-          id: req.params.id,
-        },
-      });
       await Rekomendasi.destroy({
         where: {
-          id: req.params.id,
+          userId: req.params.id,
         },
       });
       res.status(200).json({ message: 'Rekomendasi Deleted' });
@@ -163,3 +120,20 @@ export const deleteRekomendasi = asyncHandler(
     }
   },
 );
+
+cron.schedule('0 0 * * *', async () => {
+  try {
+    const today = moment().startOf('day'); // start of current day
+
+    await Rekomendasi.destroy({
+      where: {
+        createdAt: {
+          [Op.lt]: today.toDate(), // lt means "less than"
+        },
+      },
+    });
+    console.log('Old records deleted successfully');
+  } catch (error) {
+    console.error('Error deleting old records:', error);
+  }
+});
