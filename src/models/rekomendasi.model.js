@@ -30,21 +30,6 @@ const Rekomendasi = db.define('Rekomendasi', {
     allowNull: false,
     defaultValue: DataTypes.NOW,
   },
-  umur: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    defaultValue: DataTypes.NOW,
-  },
-  status: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    defaultValue: DataTypes.NOW,
-  },
-  riwayatPenyakit: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    defaultValue: DataTypes.NOW,
-  },
 }, { freezeTableName: true });
 
 // Define the relationship

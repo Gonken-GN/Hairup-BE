@@ -5,6 +5,7 @@ import {
   uploadFiles,
 } from '../utils/uploadFile.js';
 import User from '../models/user.model.js';
+import { errorResponse } from '../utils/response.js';
 
 export const getUsers = asyncHandler(
   async (
@@ -15,10 +16,7 @@ export const getUsers = asyncHandler(
       const response = await User.findAll();
       res.status(200).json(response);
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
+     errorResponse(res, error.message, 500);
     }
   },
 );
@@ -39,10 +37,7 @@ export const getUserById = asyncHandler(
         user,
       });
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
+      errorResponse(res, error.message, 500);
     }
   },
 );
@@ -68,10 +63,7 @@ export const createUser = asyncHandler(
         user,
       });
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
+      errorResponse(res, error.message, 500);
     }
   },
 );
@@ -104,10 +96,7 @@ export const updateUser = asyncHandler(
 
       res.status(200).json({ msg: 'User Updated' });
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
+      errorResponse(res, error.message, 500);
     }
   },
 );
@@ -133,10 +122,7 @@ export const deleteUser = asyncHandler(
       });
       res.status(200).json({ message: 'User Deleted' });
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
+      errorResponse(res, error.message, 500);
     }
   },
 );

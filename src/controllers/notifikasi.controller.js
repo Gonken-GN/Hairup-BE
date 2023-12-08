@@ -14,12 +14,15 @@ export const sseController = {
     const clientId = Date.now();
     const newClient = { id: clientId, res };
     addClient(newClient);
-    // Function to send updates
+
+    // Function to send updates in JSON format
     setInterval(() => {
       const message = { timestamp: new Date(), message: 'Hourly update' };
-  const formattedMessage = `data: ${JSON.stringify(message)}\n\n`;
-  sendToAllClients(formattedMessage);
-    }, 10000);
+      const formattedMessage = `data: ${JSON.stringify(message)}\n\n`;
+      console.log(formattedMessage);
+      sendToAllClients(formattedMessage); // Ensure this function sends the formattedMessage to each client
+    }, 1000);
+
     req.on('close', () => {
       removeClient(clientId);
     });

@@ -1,7 +1,10 @@
 import express from 'express';
-import { createRekomendasi } from '../controllers/rekomendasi.controller.js';
+import { createRekomendasi, deleteRekomendasi, getAqi, getRekomendasi } from '../controllers/rekomendasi.controller.js';
 
 const router = express.Router();
-router.get('/', createRekomendasi);
+router.get('/', getAqi);
+router.get('/:id', getRekomendasi);
+router.post('/:id', createRekomendasi);
+router.delete('/:id', deleteRekomendasi);
 
 export default router;

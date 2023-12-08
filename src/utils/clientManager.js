@@ -13,6 +13,4 @@ export const sendToAllClients = (data) => {
   clients.forEach((client) => client.res.write(data));
 };
 
- // 1 hour
-
 // module.exports = { addClient, removeClient, sendToAllClients };
