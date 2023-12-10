@@ -12,6 +12,7 @@ import {
 } from '../utils/getAPI.js';
 import Rekomendasi from '../models/rekomendasi.model.js';
 
+let statusCategory = null;
 export const getAqi = asyncHandler(
   async (
     /** @type import('express').Request */ req,
@@ -24,6 +25,7 @@ export const getAqi = asyncHandler(
       const riwayatPenyakit = 'heartDiseasePopulation';
       const status = 'pregnant';
       const recommendation = [];
+
       let flag = false;
       if (aqi) {
         Object.entries(aqi.healthRecommendations).forEach(([key, value]) => {
@@ -39,12 +41,23 @@ export const getAqi = asyncHandler(
           recommendation.push(aqi.healthRecommendations.generalPopulation);
         }
       }
-      res.status(200).json({
-        coordinates,
-        weather: weather.data,
-        aqi,
-        rekomendasi: recommendation,
-      });
+      if (aqi.indexes[0].category !== statusCategory) {
+        statusCategory = aqi.indexes[0].category;
+        res.status(200).json({
+          coordinates,
+          weather: weather.data,
+          aqi,
+          rekomendasi: recommendation,
+          notification: statusCategory,
+        });
+      } else {
+        res.status(200).json({
+          coordinates,
+          weather: weather.data,
+          aqi,
+          rekomendasi: recommendation,
+        });
+      }
     } catch (error) {
       errorResponse(res, error.message, 500);
     }
