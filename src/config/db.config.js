@@ -5,21 +5,21 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Production configuration
-// const db = new Sequelize(
-//   process.env.DB_NAME,
-//   process.env.DB_USERNAME,
-//   process.env.DB_PASSWORD,
-//   {
-//     host: process.env.DB_HOST,
-//     port: process.env.DB_PORT,
-//     dialect: process.env.DB_DIALECT,
-//   },
-// );
+const db = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USERNAME,
+  process.env.DB_PASSWORD,
+  {
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    dialect: process.env.DB_DIALECT,
+  },
+);
 
-const db = new Sequelize('hairup', 'root', '', {
-  host: 'localhost',
-  dialect: 'mysql',
-});
+// const db = new Sequelize('hairup', 'root', '', {
+//   host: 'localhost',
+//   dialect: 'mysql',
+// });
 
 /* Uncommand to sync table design */
 
