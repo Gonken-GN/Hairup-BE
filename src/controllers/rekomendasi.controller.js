@@ -20,7 +20,7 @@ export const getAqi = asyncHandler(
     /** @type import('express').Response */ res,
   ) => {
     try {
-      const user = await User.findOne({ where: { userId: req.params.id } });
+      const user = await User.findOne({ where: { id: req.params.id } });
       const coordinates = await getCoordinates(user.lokasi);
       const aqi = await callAQIAPI(coordinates.lng, coordinates.lat);
       const weather = await callWeatherAPI(coordinates.lng, coordinates.lat);
