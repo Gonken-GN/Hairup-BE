@@ -41,7 +41,7 @@ async function callAQIAPI(
     .then((response) => {
       aqi = response.data;
     })
-    .catch((err) => errorResponse(errorResponse(res, err.message, 500)));
+    .catch((err) => console.log(err.message));
   return getAQI();
 }
 async function callWeatherAPI(long, lat) {
