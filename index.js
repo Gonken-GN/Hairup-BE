@@ -3,6 +3,9 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
 import cron from 'node-cron';
+import { Op } from 'sequelize';
+import moment from 'moment';
+import Rekomendasi from './src/models/rekomendasi.model.js';
 // import route
 import userRouter from './src/routes/user.route.js';
 import rekomendasiRouter from './src/routes/rekomendasi.route.js';
@@ -27,6 +30,22 @@ const init = () => {
   });
   cron.schedule('0 * * * *', async () => {
     storeData();
+  });
+  cron.schedule('0 0 * * *', async () => {
+    try {
+      const today = moment().startOf('day'); // start of current day
+
+      await Rekomendasi.destroy({
+        where: {
+          createdAt: {
+            [Op.lt]: today.toDate(), // lt means "less than"
+          },
+        },
+      });
+      console.log('Old records deleted successfully');
+    } catch (error) {
+      console.error('Error deleting old records:', error);
+    }
   });
 };
 

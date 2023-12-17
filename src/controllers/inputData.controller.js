@@ -4,7 +4,6 @@ import { callAQIAPI } from '../utils/getAPI.js';
 import { getCoordinates } from '../utils/lokasi.js';
 
 function extractPollutantData(data) {
-
   const pollutantObject = {};
   data.pollutants.forEach((pollutant) => {
     // Use the pollutant code as the key and its concentration as the value

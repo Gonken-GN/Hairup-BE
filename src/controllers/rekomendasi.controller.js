@@ -11,6 +11,7 @@ import {
   getWeather,
 } from '../utils/getAPI.js';
 import Rekomendasi from '../models/rekomendasi.model.js';
+import User from '../models/user.model.js';
 
 let statusCategory = null;
 export const getAqi = asyncHandler(
@@ -19,18 +20,18 @@ export const getAqi = asyncHandler(
     /** @type import('express').Response */ res,
   ) => {
     try {
-      const coordinates = await getCoordinates('KABUPATEN ACEH BARAT');
+      const user = await User.findOne({ where: { userId: req.params.id } });
+      const coordinates = await getCoordinates(user.lokasi);
       const aqi = await callAQIAPI(coordinates.lng, coordinates.lat);
       const weather = await callWeatherAPI(coordinates.lng, coordinates.lat);
-      const user = await Rekomendasi.findOne({ where: { userId: req.params.id } });
       const recommendation = [];
 
       let flag = false;
       if (aqi) {
         Object.entries(aqi.healthRecommendations).forEach(([key, value]) => {
           if (
-            key.toLowerCase().includes(user.riwayatPenyakit.toLowerCase())
-            || key.toLowerCase().includes(user.status.toLowerCase())
+            key.toLowerCase().includes(user.riwayatPenyakit?.toLowerCase())
+            || key.toLowerCase().includes(user.status?.toLowerCase())
           ) {
             flag = true;
             recommendation.push(value);
@@ -43,6 +44,7 @@ export const getAqi = asyncHandler(
       if (aqi.indexes[0].category !== statusCategory) {
         statusCategory = aqi.indexes[0].category;
         res.status(200).json({
+          success: true,
           coordinates,
           weather: weather.data,
           aqi,
@@ -139,19 +141,3 @@ export const deleteRekomendasi = asyncHandler(
   },
 );
 
-cron.schedule('0 0 * * *', async () => {
-  try {
-    const today = moment().startOf('day'); // start of current day
-
-    await Rekomendasi.destroy({
-      where: {
-        createdAt: {
-          [Op.lt]: today.toDate(), // lt means "less than"
-        },
-      },
-    });
-    console.log('Old records deleted successfully');
-  } catch (error) {
-    console.error('Error deleting old records:', error);
-  }
-});
