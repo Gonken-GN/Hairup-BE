@@ -23,8 +23,6 @@ export const getAqi = asyncHandler(
       const aqi = await callAQIAPI(coordinates.lng, coordinates.lat);
       const weather = await callWeatherAPI(coordinates.lng, coordinates.lat);
       const user = await Rekomendasi.findOne({ where: { userId: req.params.id } });
-      const riwayatPenyakit = 'heartDiseasePopulation';
-      const status = 'pregnant';
       const recommendation = [];
 
       let flag = false;

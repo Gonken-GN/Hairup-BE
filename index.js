@@ -7,7 +7,7 @@ import cron from 'node-cron';
 import userRouter from './src/routes/user.route.js';
 import rekomendasiRouter from './src/routes/rekomendasi.route.js';
 import inputData from './src/routes/inputData.route.js';
-import { storeData } from './src/controllers/inputData.controller.js';
+import storeData from './src/controllers/inputData.controller.js';
 
 dotenv.config();
 const init = () => {
@@ -25,7 +25,7 @@ const init = () => {
   server.get('/', (req, res) => {
     res.json({ message: 'Deployment berhasil 2023' });
   });
-  cron.schedule('* * * *', async () => {
+  cron.schedule('0 * * * *', async () => {
     storeData();
   });
 };
