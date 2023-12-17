@@ -19,7 +19,7 @@ const coordinatesJkt = await getCoordinates('Jakarta');
 const coordinatesBdg = await getCoordinates('Bandung');
 const coordinatesSemarang = await getCoordinates('Semarang');
 
-export async function storeData() {
+async function storeData() {
   const aqiJkt = await callAQIAPI(coordinatesJkt.lng, coordinatesJkt.lat);
   // const aqiBdg = await callAQIAPI(coordinatesBdg.long, coordinatesBdg.lat);
   // const aqiSemarang = await callAQIAPI(coordinatesSemarang.long, coordinatesSemarang.lat);
@@ -30,3 +30,5 @@ export async function storeData() {
     hourlyData = [];
   }
 }
+
+export default storeData;
