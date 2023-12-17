@@ -14,9 +14,9 @@ export const getUsers = asyncHandler(
   ) => {
     try {
       const response = await User.findAll();
-      res.status(200).json(response);
+      res.status(200).json({ success: true, response });
     } catch (error) {
-     errorResponse(res, error.message, 500);
+      errorResponse(res, error.message, 500);
     }
   },
 );
@@ -120,7 +120,7 @@ export const deleteUser = asyncHandler(
           id: req.params.id,
         },
       });
-      res.status(200).json({ message: 'User Deleted' });
+      res.status(200).json({ success: true, message: 'User Deleted' });
     } catch (error) {
       errorResponse(res, error.message, 500);
     }

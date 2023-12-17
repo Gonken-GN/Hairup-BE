@@ -22,6 +22,7 @@ export const getAqi = asyncHandler(
       const coordinates = await getCoordinates('KABUPATEN ACEH BARAT');
       const aqi = await callAQIAPI(coordinates.lng, coordinates.lat);
       const weather = await callWeatherAPI(coordinates.lng, coordinates.lat);
+      const user = await Rekomendasi.findOne({ where: { userId: req.params.id } });
       const riwayatPenyakit = 'heartDiseasePopulation';
       const status = 'pregnant';
       const recommendation = [];
@@ -30,8 +31,8 @@ export const getAqi = asyncHandler(
       if (aqi) {
         Object.entries(aqi.healthRecommendations).forEach(([key, value]) => {
           if (
-            key.toLowerCase().includes(riwayatPenyakit.toLowerCase())
-            || key.toLowerCase().includes(status.toLowerCase())
+            key.toLowerCase().includes(user.riwayatPenyakit.toLowerCase())
+            || key.toLowerCase().includes(user.status.toLowerCase())
           ) {
             flag = true;
             recommendation.push(value);
@@ -52,6 +53,7 @@ export const getAqi = asyncHandler(
         });
       } else {
         res.status(200).json({
+          success: true,
           coordinates,
           weather: weather.data,
           aqi,
@@ -70,8 +72,13 @@ export const getRekomendasi = asyncHandler(
     /** @type import('express').Response */ res,
   ) => {
     try {
-      const response = await Rekomendasi.findOne({ where: { userId: req.params.id } });
-      res.status(200).json(response);
+      const response = await Rekomendasi.findOne({
+        where: { userId: req.params.id },
+      });
+      res.status(200).json({
+        success: true,
+        response,
+      });
     } catch (error) {
       res.status(500).json({
         success: false,
@@ -102,10 +109,10 @@ export const createRekomendasi = asyncHandler(
           },
           { where: { userId: id } },
         );
-        res.status(200).json({ rekomendasi });
+        res.status(200).json({ success: true, rekomendasi });
       } else {
         const response = await Rekomendasi.create({ userId: id });
-        res.status(200).json({ response });
+        res.status(200).json({ success: true, response });
       }
     } catch (error) {
       errorResponse(res, error.message, 500);
@@ -124,7 +131,7 @@ export const deleteRekomendasi = asyncHandler(
           userId: req.params.id,
         },
       });
-      res.status(200).json({ message: 'Rekomendasi Deleted' });
+      res.status(200).json({ success: true, message: 'Rekomendasi Deleted' });
     } catch (error) {
       res.status(500).json({
         success: false,
