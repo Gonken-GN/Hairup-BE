@@ -13,7 +13,10 @@ import userRouter from './src/routes/user.route.js';
 import rekomendasiRouter from './src/routes/rekomendasi.route.js';
 import inputData from './src/routes/inputData.route.js';
 import {
+  getDataForecastJkt,
   getDataForecastSemarang,
+  setDataForecastBdg,
+  setDataForecastJkt,
   setDataForecastSemarang,
   storeDataAQI,
   storeDataAQITest,
@@ -39,14 +42,27 @@ const init = () => {
 
   server.get('/test', async (req, res) => {
     const data = await fs.readFile('input_dict_dummy.json', 'utf-8');
+    const dataBdg = await fs.readFile('input_dict_dummy_bdg.json', 'utf-8');
+    const dataJkt = await fs.readFile('input_dict_dummy_jkt.json', 'utf-8');
     const obj = JSON.parse(data);
+    const objBdg = JSON.parse(dataBdg);
+    const objJkt = JSON.parse(dataJkt);
     await axios
       .post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict', obj)
       .then((response) => {
         setDataForecastSemarang(response.data);
-        console.log(getDataForecastSemarang());
-        res.status(200).json({ message: 'Success', data: response.data });
       });
+    await axios
+      .post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict', objBdg)
+      .then((response) => {
+        setDataForecastBdg(response.data);
+      });
+    await axios
+      .post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict', objJkt)
+      .then((response) => {
+        setDataForecastJkt(response.data);
+      });
+    res.status(200).json({ message: 'Success', data: getDataForecastJkt() });
   });
   cron.schedule('0 * * * *', async () => {
     await storeDataAQI();

@@ -141,7 +141,7 @@ async function storeDataWeather() {
 
 async function storeDataAQITest() {
   // Call AQI API each cities
-  // const aqiJkt = await callAQIAPI(coordinatesJkt.lng, coordinatesJkt.lat);
+  const aqiJkt = await callAQIAPI(coordinatesJkt.lng, coordinatesJkt.lat);
   const aqiBdg = await callAQIAPI(coordinatesBdg.lng, coordinatesBdg.lat);
   const aqiSemarang = await callAQIAPI(
     coordinatesSemarang.lng,
@@ -149,22 +149,22 @@ async function storeDataAQITest() {
   );
 
   // Extract pollutant data from the API response
-  // const dataJkt = extractPollutantData(aqiJkt);
+  const dataJkt = extractPollutantData(aqiJkt);
   const dataBdg = extractPollutantData(aqiBdg);
   const dataSemarang = extractPollutantData(aqiSemarang);
 
   // Create a data object to be sent to the server
-  // hourlyDataJkt.push(dataJkt);
+  hourlyDataJkt.push(dataJkt);
   hourlyDataBdg.push(dataBdg);
   hourlyDataSemarang.push(dataSemarang);
 
   // check if the data length is more than 23 and send it to the server
-  // if (hourlyDataJkt.length > 2) {
-  //   // await axios.post('http://localhost:8000/test', datatoSendJkt).then((response) => {
-  //   //   setDataForecastJkt(response.data);
-  //   // });
-  //   hourlyDataJkt = [];
-  // }
+  if (hourlyDataJkt.length > 1) {
+    // await axios.post('http://localhost:8000/test', datatoSendJkt).then((response) => {
+    //   setDataForecastJkt(response.data);
+    // });
+    hourlyDataJkt = [];
+  }
   if (hourlyDataBdg.length > 1) {
     // await axios.post('http://localhost:8000/test', datatoSendBdg).then((response) => {
     //   setDataForecastBdg(response.data);
