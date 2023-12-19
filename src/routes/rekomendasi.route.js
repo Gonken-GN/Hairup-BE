@@ -1,10 +1,17 @@
 import express from 'express';
-import { createRekomendasi, deleteRekomendasi, getAqi, getRekomendasi } from '../controllers/rekomendasi.controller.js';
+import {
+  createRekomendasi,
+  deleteRekomendasi,
+  forecastAPI,
+  getAqi,
+  getRekomendasi,
+} from '../controllers/rekomendasi.controller.js';
 
 const router = express.Router();
-router.get('/:id', getAqi);
-router.get('/:id', getRekomendasi);
-router.post('/:id', createRekomendasi);
-router.delete('/:id', deleteRekomendasi);
+router.get('/user/:id', getAqi);
+router.get('/rekomendasi/:id', getRekomendasi);
+router.post('/user/:id', createRekomendasi);
+router.delete('/user/:id', deleteRekomendasi);
+router.get('/forecast', forecastAPI);
 
 export default router;
