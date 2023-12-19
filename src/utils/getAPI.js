@@ -89,7 +89,6 @@ async function getPreviousDaysAQI(long, lat, days) {
   // eslint-disable-next-line no-plusplus
   for (let i = 1; i <= days; i++) {
     const date = await formatDate(i);
-    console.log(date);
     aqiHistory[i] = await getAQIData(long, lat, date);
   }
 

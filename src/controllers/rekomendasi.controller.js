@@ -11,8 +11,12 @@ import {
 } from '../utils/getAPI.js';
 import Rekomendasi from '../models/rekomendasi.model.js';
 import User from '../models/user.model.js';
-import { getDataForecastBdg, getDataForecastJkt, getDataForecastSemarang } from '../utils/inputDataML.js';
-import { extractForecastData, extractPastData } from '../utils/extractData.js';
+import {
+  getDataForecastBdg,
+  getDataForecastJkt,
+  getDataForecastSemarang,
+} from '../utils/inputDataML.js';
+import { extractForecastData, extractPastData, findMaxAqiForHour } from '../utils/extractData.js';
 
 let statusCategory = null;
 export const getAqi = asyncHandler(
@@ -31,8 +35,14 @@ export const getAqi = asyncHandler(
       if (aqi) {
         Object.entries(aqi.healthRecommendations).forEach(([key, value]) => {
           if (
-            key.toLowerCase().includes(user.riwayatPenyakit?.toLowerCase().replace(/ /g, ''))
-            || key.toLowerCase().includes(user.status?.toLowerCase().replace(/ /g, ''))
+            key
+              .toLowerCase()
+              .includes(
+                user.riwayatPenyakit?.toLowerCase().replace(/ /g, ''),
+              )
+            || key
+              .toLowerCase()
+              .includes(user.status?.toLowerCase().replace(/ /g, ''))
           ) {
             flag = true;
             recommendation.push(value);
@@ -101,23 +111,21 @@ export const createRekomendasi = asyncHandler(
     /** @type import('express').Response */ res,
   ) => {
     try {
-      const {
-        waktuKeluar, lokasi, status,
-      } = req.body;
+      const { waktuKeluar, lokasi } = req.body;
       const { id } = req.params;
-      const coordinates = await getCoordinates(lokasi);
-      const aqi = getAQI();
-      const weather = getWeather();
       const rekomendasi = await Rekomendasi.findOne({ where: { userId: id } });
+      let dataForecast = {};
+      if (lokasi === 'semarang') {
+        dataForecast = getDataForecastSemarang();
+      } else if (lokasi === 'jakarta') {
+        dataForecast = getDataForecastJkt();
+      } else if (lokasi === 'bandung') {
+        dataForecast = getDataForecastBdg();
+      }
+      const test = findMaxAqiForHour(dataForecast.predictions.next_1.perHours, waktuKeluar);
+      res.status(200).json({ success: true, test });  
+      console.log(test);
       if (rekomendasi) {
-        let dataForecast = {};
-        if (lokasi === 'semarang') {
-          dataForecast = getDataForecastSemarang();
-        } else if (lokasi === 'jakarta') {
-          dataForecast = getDataForecastJkt();
-        } else if (lokasi === 'bandung') {
-          dataForecast = getDataForecastBdg();
-        }
         await Rekomendasi.update(
           {
             userId: id,
@@ -162,27 +170,71 @@ export const forecastAPI = asyncHandler(
     /** @type import('express').Response */ res,
   ) => {
     try {
+      // Get coordinates
       const coordinatesBandung = await getCoordinates('Semarang');
-      const data = await getPreviousDaysAQI(
+      const coordinatesJakarta = await getCoordinates('Jakarta');
+      const coordinatesSemarang = await getCoordinates('Semarang');
+
+      // Get AQI data
+      const dataPrevBdg = await getPreviousDaysAQI(
         coordinatesBandung.lng,
         coordinatesBandung.lat,
         3,
       );
+      const dataPrevJkt = await getPreviousDaysAQI(
+        coordinatesJakarta.lng,
+        coordinatesJakarta.lat,
+        3,
+      );
+      const dataPrevSemarang = await getPreviousDaysAQI(
+        coordinatesSemarang.lng,
+        coordinatesSemarang.lat,
+        3,
+      );
       // Extracting indexes data
-      const pastData = extractPastData(data);
-      const foreCastData = extractForecastData(getDataForecastSemarang());
-      const currentData = getAQI();
+      const pastDataBdg = extractPastData(dataPrevBdg);
+      const pastDataJkt = extractPastData(dataPrevJkt);
+      const pastDataSemarang = extractPastData(dataPrevSemarang);
+      // Get forecast data
+      const foreCastDataBdg = extractForecastData(getDataForecastSemarang());
+      const foreCastDataJkt = extractForecastData(getDataForecastJkt());
+      const foreCastDataSemarang = extractForecastData(
+        getDataForecastSemarang(),
+      );
+
+      const currentDataBdg = await callAQIAPI(
+        coordinatesBandung.lng,
+        coordinatesBandung.lat,
+      );
+      const currentDataJkt = await callAQIAPI(
+        coordinatesJakarta.lng,
+        coordinatesJakarta.lat,
+      );
+      const currentDataSemarang = await callAQIAPI(
+        coordinatesSemarang.lng,
+        coordinatesSemarang.lat,
+      );
       const dataSemarang = {
-        PastDataAQI: pastData,
-        currentDataAQI: currentData.indexes[0],
-        foreCastAQI: foreCastData,
+        PastDataAQI: pastDataBdg,
+        currentDataAQI: currentDataSemarang.indexes[0],
+        foreCastAQI: foreCastDataSemarang,
       };
-      res
-        .status(200)
-        .json({
-          success: true,
-          semarang: dataSemarang,
-        });
+      const dataJkt = {
+        PastDataAQI: pastDataJkt,
+        currentDataAQI: currentDataJkt.indexes[0],
+        foreCastAQI: foreCastDataJkt,
+      };
+      const dataBdg = {
+        PastDataAQI: pastDataBdg,
+        currentDataAQI: currentDataBdg.indexes[0],
+        foreCastAQI: foreCastDataBdg,
+      };
+      res.status(200).json({
+        success: true,
+        semarang: dataSemarang,
+        bandung: dataBdg,
+        jakarta: dataJkt,
+      });
     } catch (error) {
       res.status(500).json({
         success: false,
