@@ -1,16 +1,16 @@
-# AirHealth Companion App
+# Hairup App
 
 ![Hairup Logo](https://storage.googleapis.com/hairup_bucket/Hairup%20Logo.jpeg)
 
 ## Overview
 
-The AirHealth Companion App is a mobile application designed to empower users with real-time Air Quality Index (AQI) data and personalized health recommendations. Whether you're planning a jog in the park, a family picnic, or just stepping out for a stroll, this app is your go-to tool for staying informed and safeguarding your well-being.
+The Hairup App is a mobile application designed to empower users with real-time Air Quality Index (AQI) data and personalized health recommendations. Whether you're planning a jog in the park, a family picnic, or just stepping out for a stroll, this app is your go-to tool for staying informed and safeguarding your well-being.
 
 ## Key Features
 
 - **Real-time AQI Updates:** Receive up-to-the-minute air quality information for your precise location.
 
-- **Personalized Health Recommendations:** Our app goes beyond generic advice. By considering individual health profiles, including skin and overall sensitivity, age, and exact location, it tailors recommendations to your specific needs.
+- **Personalized Health Recommendations:** Our app goes beyond generic advice. By considering individual health profiles, age, and exact location, it tailors recommendations to your specific needs.
 
 - **Customized Guidance:** Input your current health status, planned outdoor time, and activities to generate bespoke advice that takes your unique circumstances into account.
 
@@ -40,7 +40,7 @@ To get started with the AirHealth Companion App, follow these steps:
 
 ## Feedback and Contributions
 
-We welcome feedback and contributions to make the AirHealth Companion App even better. If you have suggestions, find bugs, or want to contribute to the project, please create an issue or submit a pull request.
+We welcome feedback and contributions to make the Hairup App even better. If you have suggestions, find bugs, or want to contribute to the project, please create an issue or submit a pull request.
 
 ## License
 
