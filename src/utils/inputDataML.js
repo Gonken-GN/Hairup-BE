@@ -102,6 +102,30 @@ async function storeDataAQI() {
   }
 }
 
+let dataForecastWeatherJkt = {};
+let dataForecastWeatherBdg = {};
+let dataForecastWeatherSemarang = {};
+
+function setDataForecastWeatherJkt(data) {
+  dataForecastWeatherJkt = data;
+}
+function setDataForecastWeatherBdg(data) {
+  dataForecastWeatherBdg = data;
+}
+function setDataForecastWeatherSemarang(data) {
+  dataForecastWeatherSemarang = data;
+}
+
+function getDataForecastWeatherJkt() {
+  return dataForecastWeatherJkt;
+}
+function getDataForecastWeatherBdg() {
+  return dataForecastWeatherBdg;
+}
+function getDataForecastWeatherSemarang() {
+  return dataForecastWeatherSemarang;
+}
+
 let inputDataJkt = [];
 let inputDataBdg = [];
 let inputDataSemarang = [];
@@ -157,22 +181,25 @@ async function storeDataWeather() {
   inputDataBdg.push(dataBdg);
   inputDataSemarang.push(dataSemarang);
   if (inputDataBdg.length > 3) {
-    await axios.post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', dataWeatherBdg);
+    await axios.post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', dataWeatherBdg).then((response) => {
+      setDataForecastBdg(response.data);
+    });
     inputDataBdg = [];
   }
 
   if (inputDataJkt.length > 3) {
-    await axios.post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', dataWeatherJkt);
+    await axios.post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', dataWeatherJkt).then((response) => {
+      setDataForecastJkt(response.data);
+    });
     inputDataJkt = [];
   }
 
   if (inputDataSemarang.length > 3) {
-    await axios.post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', dataWeatherSemarang);
+    await axios.post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', dataWeatherSemarang).then((response) => {
+      setDataForecastSemarang(response.data);
+    });
     inputDataSemarang = [];
   }
-  axios.post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', dataJkt);
-  axios.post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', dataBdg);
-  axios.post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', dataSemarang);
 }
 
 async function storeDataAQITest() {
@@ -226,4 +253,10 @@ export {
   getDataForecastBdg,
   getDataForecastSemarang,
   storeDataAQITest,
+  setDataForecastWeatherJkt,
+  setDataForecastWeatherBdg,
+  setDataForecastWeatherSemarang,
+  getDataForecastWeatherJkt,
+  getDataForecastWeatherBdg,
+  getDataForecastWeatherSemarang,
 };

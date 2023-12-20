@@ -15,11 +15,14 @@ import inputData from './src/routes/inputData.route.js';
 import {
   getDataForecastJkt,
   getDataForecastSemarang,
+  getDataForecastWeatherBdg,
   setDataForecastBdg,
   setDataForecastJkt,
   setDataForecastSemarang,
+  setDataForecastWeatherBdg,
+  setDataForecastWeatherJkt,
+  setDataForecastWeatherSemarang,
   storeDataAQI,
-  storeDataAQITest,
   storeDataWeather,
 } from './src/utils/inputDataML.js';
 
@@ -64,10 +67,38 @@ const init = () => {
       });
     res.status(200).json({ message: 'Success', data: getDataForecastJkt() });
   });
+
+  server.get('/testWeather', async (req, res) => {
+    const data = await fs.readFile('input_weather_smrg.json', 'utf-8');
+    const dataBdg = await fs.readFile('input_weather_bdg.json', 'utf-8');
+    const dataJkt = await fs.readFile('input_weather_jkt.json', 'utf-8');
+    const obj = JSON.parse(data);
+    const objBdg = JSON.parse(dataBdg);
+    const objJkt = JSON.parse(dataJkt);
+    await axios
+      .post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', obj)
+      .then((response) => {
+        setDataForecastWeatherSemarang(response.data);
+      });
+    await axios
+      .post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', objBdg)
+      .then((response) => {
+        setDataForecastWeatherBdg(response.data);
+      });
+    await axios
+      .post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', objJkt)
+      .then((response) => {
+        setDataForecastWeatherJkt(response.data);
+      });
+    res.status(200).json({ message: 'Success', data: getDataForecastWeatherBdg() });
+  });
   cron.schedule('0 * * * *', async () => {
     await storeDataAQI();
   });
   cron.schedule('0 0 * * *', async () => {
+    setTimeout(async () => {
+      await storeDataWeather();
+    }, 100000);
     await storeDataWeather();
     try {
       const today = moment().startOf('day'); // start of current day
