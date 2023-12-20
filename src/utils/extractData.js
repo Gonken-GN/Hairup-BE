@@ -17,17 +17,12 @@ function extractForecastData(foreCastData) {
   const extractedForecastData = [];
 
   // eslint-disable-next-line guard-for-in
-  let i = 1;
-  // eslint-disable-next-line guard-for-in
   for (const key in foreCastData.predictions) {
-    const date = formatDateAfter(i);
     const { dominantPollutant, medianAQI } = foreCastData.predictions[key];
     extractedForecastData.push({
       dominantPollutant,
       medianAQI,
     });
-    // eslint-disable-next-line no-plusplus
-    i++;
   }
   return extractedForecastData;
 }

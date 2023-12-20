@@ -7,6 +7,7 @@ import {
   formatDate,
   getAQI,
   getPreviousDaysAQI,
+  getPreviousWeatherAPI,
   getWeather,
   setAQI,
 } from '../utils/getAPI.js';
@@ -16,6 +17,9 @@ import {
   getDataForecastBdg,
   getDataForecastJkt,
   getDataForecastSemarang,
+  getDataForecastWeatherBdg,
+  getDataForecastWeatherJkt,
+  getDataForecastWeatherSemarang,
 } from '../utils/inputDataML.js';
 import {
   extractDataByUserInput,
@@ -193,7 +197,7 @@ export const deleteRekomendasi = asyncHandler(
   },
 );
 
-export const forecastAPI = asyncHandler(
+export const forecastAQIAPI = asyncHandler(
   async (
     /** @type import('express').Request */ req,
     /** @type import('express').Response */ res,
@@ -203,8 +207,6 @@ export const forecastAPI = asyncHandler(
       const coordinatesBandung = await getCoordinates('Semarang');
       const coordinatesJakarta = await getCoordinates('Jakarta');
       const coordinatesSemarang = await getCoordinates('Semarang');
-      const date = new Date();
-      date.setDate(date.getDate());
 
       // Get AQI data
       const dataPrevBdg = await getPreviousDaysAQI(
@@ -222,6 +224,7 @@ export const forecastAPI = asyncHandler(
         coordinatesSemarang.lat,
         3,
       );
+
       // Extracting indexes data
       const pastDataBdg = extractPastData(dataPrevBdg);
       const pastDataJkt = extractPastData(dataPrevJkt);
@@ -248,24 +251,97 @@ export const forecastAPI = asyncHandler(
       // Create data object for AQI
       const dataSemarang = {
         PastDataAQI: pastDataSemarang,
-        currentDataAQI: (currentDataSemarang.indexes[0], date),
+        currentDataAQI: currentDataSemarang.indexes[0],
         foreCastAQI: foreCastDataSemarang,
       };
       const dataJkt = {
         PastDataAQI: pastDataJkt,
-        currentDataAQI: (currentDataJkt.indexes[0], date),
+        currentDataAQI: currentDataJkt.indexes[0],
         foreCastAQI: foreCastDataJkt,
       };
       const dataBdg = {
         PastDataAQI: pastDataBdg,
-        currentDataAQI: (currentDataBdg.indexes[0], date),
+        currentDataAQI: currentDataBdg.indexes[0],
         foreCastAQI: foreCastDataBdg,
       };
+
       res.status(200).json({
         success: true,
         semarang: dataSemarang,
         bandung: dataBdg,
         jakarta: dataJkt,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  },
+);
+
+export const forecastWeatherAPI = asyncHandler(
+  async (
+    /** @type import('express').Request */ req,
+    /** @type import('express').Response */ res,
+  ) => {
+    try {
+      // Get coordinates
+      const coordinatesBandung = await getCoordinates('Semarang');
+      const coordinatesJakarta = await getCoordinates('Jakarta');
+      const coordinatesSemarang = await getCoordinates('Semarang');
+      // Get weather data
+      const dataPrevWeatherBdg = await getPreviousWeatherAPI(
+        coordinatesBandung.lng,
+        coordinatesBandung.lat,
+      );
+      const dataPrevWeatherJkt = await getPreviousWeatherAPI(
+        coordinatesJakarta.lng,
+        coordinatesJakarta.lat,
+      );
+      const dataPrevWeatherSemarang = await getPreviousWeatherAPI(
+        coordinatesSemarang.lng,
+        coordinatesSemarang.lat,
+      );
+      // call current weather data
+      const currentDataWeatherBdg = await callWeatherAPI(
+        coordinatesBandung.lng,
+        coordinatesBandung.lat,
+      );
+      const currentDataWeatherJkt = await callWeatherAPI(
+        coordinatesJakarta.lng,
+        coordinatesJakarta.lat,
+      );
+      const currentDataWeatherSemarang = await callWeatherAPI(
+        coordinatesSemarang.lng,
+        coordinatesSemarang.lat,
+      );
+
+      // call forecast weather data
+      const foreCastDataWeatherBdg = getDataForecastWeatherBdg();
+      const foreCastDataWeatherJkt = getDataForecastWeatherJkt();
+      const foreCastDataWeatherSemarang = getDataForecastWeatherSemarang();
+
+      const dataWeatherBandung = {
+        PastDataWeather: dataPrevWeatherBdg,
+        currentDataWeather: currentDataWeatherBdg.data,
+        foreCastWeather: foreCastDataWeatherBdg,
+      };
+      const dataWeatherJakarta = {
+        PastDataWeather: dataPrevWeatherJkt,
+        currentDataWeather: currentDataWeatherJkt.data,
+        foreCastWeather: foreCastDataWeatherJkt,
+      };
+      const dataWeatherSemarang = {
+        PastDataWeather: dataPrevWeatherSemarang,
+        currentDataWeather: currentDataWeatherSemarang.data,
+        foreCastWeather: foreCastDataWeatherSemarang,
+      };
+      res.status(200).json({
+        success: true,
+        semarang: dataWeatherSemarang,
+        bandung: dataWeatherBandung,
+        jakarta: dataWeatherJakarta,
       });
     } catch (error) {
       res.status(500).json({

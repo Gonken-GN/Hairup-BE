@@ -2,7 +2,8 @@ import express from 'express';
 import {
   createRekomendasi,
   deleteRekomendasi,
-  forecastAPI,
+  forecastAQIAPI,
+  forecastWeatherAPI,
   getAqi,
   getRekomendasi,
 } from '../controllers/rekomendasi.controller.js';
@@ -12,6 +13,7 @@ router.get('/user/:id', getAqi);
 router.get('/rekomendasi/:id', getRekomendasi);
 router.post('/user/:id', createRekomendasi);
 router.delete('/user/:id', deleteRekomendasi);
-router.get('/forecast', forecastAPI);
+router.get('/forecastAQI', forecastAQIAPI);
+router.get('/forecastWeather', forecastWeatherAPI);
 
 export default router;

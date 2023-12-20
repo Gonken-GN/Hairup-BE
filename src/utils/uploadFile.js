@@ -23,7 +23,7 @@ export async function uploadFileToCloud(file) {
       throw new Error('File upload failed');
     });
 
-    blobStream.on('finish', () => {
+    blobStream.on('finish', async () => {
       // The file upload is complete
     });
 
