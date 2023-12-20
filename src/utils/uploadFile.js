@@ -1,4 +1,6 @@
 import { Storage } from '@google-cloud/storage';
+import path from 'path';
+import multer from 'multer';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -7,6 +9,31 @@ const storage = new Storage({
   keyFilename: process.env.KEY_SERVICE_ACCOUNT,
 });
 const bucket = storage.bucket(process.env.BUCKET_NAME);
+const multerStorage = multer.memoryStorage();
+const upload = multer({ storage: multerStorage});
+export async function uploadFileToCloud(file) {
+  try {
+    const blob = bucket.file(uuidv4() + path.extname(file.originalname)); // Generate unique file name
+    const blobStream = blob.createWriteStream({
+      resumable: false,
+    });
+
+    blobStream.on('error', err => {
+      console.error(err);
+      throw new Error('File upload failed');
+    });
+
+    blobStream.on('finish', () => {
+      // The file upload is complete
+    });
+
+    blobStream.end(file.buffer);
+    return `https://storage.googleapis.com/${process.env.BUCKET_NAME}/${blob.name}`;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Unable to upload file');
+  }
+}
 export async function uploadFiles(file) {
   try {
     const upload = await bucket.upload(file);

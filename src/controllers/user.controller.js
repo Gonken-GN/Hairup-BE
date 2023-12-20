@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import {
   deleteObjectByLink,
   geneteratePublicUrl,
+  uploadFileToCloud,
   uploadFiles,
 } from '../utils/uploadFile.js';
 import User from '../models/user.model.js';
@@ -48,16 +49,14 @@ export const createUser = asyncHandler(
     /** @type import('express').Response */ res,
   ) => {
     try {
-      if (req.body.files) {
-        await uploadFiles(req.body.files);
-        const avatarUrl = geneteratePublicUrl('package.json');
-        const user = await User.create({ ...req.body, avatarUrl });
-        res.status(200).json({
-          success: true,
-          user,
-        });
+      let avatarUrl;
+      if (req.file) {
+        avatarUrl = await uploadFileToCloud(req.file);
       }
-      const user = await User.create(req.body);
+
+      const userData = avatarUrl ? { ...req.body, avatarUrl } : { ...req.body };
+      const user = await User.create(userData);
+
       res.status(200).json({
         success: true,
         user,
@@ -74,18 +73,21 @@ export const updateUser = asyncHandler(
     /** @type import('express').Response */ res,
   ) => {
     try {
-      if (req.body.files) {
+      if (req.files) {
         const user = await User.findOne({
           where: {
             id: req.params.id,
           },
         });
-        console.log(user.avatarUrl);
         deleteObjectByLink(user.avatarUrl);
-        await uploadFiles(req.body.files);
-        const avatarUrl = geneteratePublicUrl(req.body.files);
+        const avatarUrl = await uploadFileToCloud(req.files);
         await user.update({ ...req.body, avatarUrl });
-        res.status(200).json({ success: true, user });
+        const updatedUser = await User.findOne({
+          where: {
+            id: req.params.id,
+          },
+        });
+        res.status(200).json({ success: true, updateUser });
       } else {
         await User.update(req.body, {
           where: {
