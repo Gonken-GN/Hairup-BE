@@ -102,17 +102,35 @@ async function storeDataAQI() {
   }
 }
 
+let inputDataJkt = [];
+let inputDataBdg = [];
+let inputDataSemarang = [];
+
+const dataWeatherJkt = {
+  kota: 'jakarta',
+  input_data: inputDataJkt,
+};
+
+const dataWeatherBdg = {
+  kota: 'bandung',
+  input_data: inputDataBdg,
+};
+
+const dataWeatherSemarang = {
+  kota: 'semarang',
+  input_data: inputDataSemarang,
+};
 // Call weather API
 // Extract weather data from the API response
 function exportWeatherData(data) {
   const weatherObject = {};
-  weatherObject.temp_max = data.main.temp_max;
-  weatherObject.temp_min = data.main.temp_min;
-  weatherObject.humidity = data.main.humidity;
+  weatherObject.Tx = data.main.temp_max;
+  weatherObject.tn = data.main.temp_min;
+  weatherObject.RH_avg = data.main.humidity;
   if (data.rain) {
-    weatherObject.rain = data.rain['1h'];
+    weatherObject.RR = data.rain['1h'];
   } else {
-    weatherObject.rain = 0;
+    weatherObject.RR = 0;
   }
   return weatherObject;
 }
@@ -130,13 +148,31 @@ async function storeDataWeather() {
     coordinatesSemarang.long,
     coordinatesSemarang.lat,
   );
-
+  // Extract pollutant data from the API response
   const dataJkt = exportWeatherData(weatherJkt.data);
   const dataBdg = exportWeatherData(weatherBdg.data);
   const dataSemarang = exportWeatherData(weatherSemarang.data);
-  // axios.post('http://localhost:8000/test', dataJkt);
-  // axios.post('http://localhost:8000/test', dataBdg);
-  // axios.post('http://localhost:8000/test', dataSemarang);
+  // Create a data object to be sent to the server
+  inputDataJkt.push(dataJkt);
+  inputDataBdg.push(dataBdg);
+  inputDataSemarang.push(dataSemarang);
+  if (inputDataBdg.length > 3) {
+    await axios.post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', dataWeatherBdg);
+    inputDataBdg = [];
+  }
+
+  if (inputDataJkt.length > 3) {
+    await axios.post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', dataWeatherJkt);
+    inputDataJkt = [];
+  }
+
+  if (inputDataSemarang.length > 3) {
+    await axios.post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', dataWeatherSemarang);
+    inputDataSemarang = [];
+  }
+  axios.post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', dataJkt);
+  axios.post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', dataBdg);
+  axios.post('https://capstone-ml-fx7t635cra-uc.a.run.app/predict_weather', dataSemarang);
 }
 
 async function storeDataAQITest() {

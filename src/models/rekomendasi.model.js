@@ -20,6 +20,20 @@ const Rekomendasi = db.define('rekomendasi', {
       key: 'id',
     },
   },
+  lokasi: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
+  },
+  pesan: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
+  },
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,

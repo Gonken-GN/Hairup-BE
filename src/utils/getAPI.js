@@ -62,6 +62,12 @@ async function formatDate(daysAgo) {
   return date.toISOString();
 }
 
+async function formatDateAfter(daysAgo) {
+  const date = new Date();
+  date.setDate(date.getDate() + daysAgo);
+  return date.toISOString();
+}
+
 async function getAQIData(long, lat, dateTime) {
   const aqiOptions = {
     dateTime,
@@ -104,4 +110,5 @@ export {
   formatDate,
   getAQIData,
   setAQI,
+  formatDateAfter,
 };

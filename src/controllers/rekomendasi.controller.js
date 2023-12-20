@@ -4,6 +4,7 @@ import { getCoordinates } from '../utils/lokasi.js';
 import {
   callAQIAPI,
   callWeatherAPI,
+  formatDate,
   getAQI,
   getPreviousDaysAQI,
   getWeather,
@@ -16,7 +17,12 @@ import {
   getDataForecastJkt,
   getDataForecastSemarang,
 } from '../utils/inputDataML.js';
-import { extractForecastData, extractPastData, findMaxAqiForHour } from '../utils/extractData.js';
+import {
+  extractDataByUserInput,
+  extractForecastData,
+  extractPastData,
+  findMaxAqiForHour,
+} from '../utils/extractData.js';
 
 let statusCategory = null;
 export const getAqi = asyncHandler(
@@ -111,7 +117,7 @@ export const createRekomendasi = asyncHandler(
     /** @type import('express').Response */ res,
   ) => {
     try {
-      const { waktuKeluar, lokasi } = req.body;
+      const { waktuKeluar, tanggal, lokasi } = req.body;
       const { id } = req.params;
       const rekomendasi = await Rekomendasi.findOne({ where: { userId: id } });
       let dataForecast = {};
@@ -122,19 +128,42 @@ export const createRekomendasi = asyncHandler(
       } else if (lokasi === 'bandung') {
         dataForecast = getDataForecastBdg();
       }
-      const test = findMaxAqiForHour(dataForecast.predictions.next_1.perHours, waktuKeluar);
-      res.status(200).json({ success: true, test });  
-      console.log(test);
+
+      const hari = extractDataByUserInput(dataForecast, tanggal);
+      const test = findMaxAqiForHour(hari.perHours, waktuKeluar);
+      let message = '';
+      if (test < 50) {
+        message = 'Udara hari ini sangat segar! Ideal untuk aktivitas luar. Nikmati alam dan jaga kesehatan dengan udara bersih.';
+      } else if (test > 50 && test < 100) {
+        message = 'Kualitas udara cukup baik. Cocok untuk kegiatan luar, tapi tetap waspada bagi yang sensitif.';
+      } else if (test > 100 && test < 150) {
+        message = 'Udara kurang bersahabat untuk sensitif. Batasi aktivitas luar dan jaga kesehatan, mari jaga udara bersih';
+      } else if (test > 150 && test < 200) {
+        message = 'Udara hari ini menantang. Batasi waktu di luar, gunakan masker, dan lakukan aktivitas ringan saja.';
+      } else if (test > 200 && test < 300) {
+        message = 'Udara sangat tidak sehat. Dianjurkan tetap di dalam, jaga sirkulasi udara, dan mari bersatu untuk udara bersih.  ';
+      } else if (test > 300) {
+        message = 'Darurat! Udara berbahaya. Hindari keluar rumah, jaga kualitas udara dalam ruangan. Ayo bertindak untuk lingkungan!';
+      }
       if (rekomendasi) {
         await Rekomendasi.update(
           {
             userId: id,
+            lokasi,
+            pesan: message,
           },
           { where: { userId: id } },
         );
-        res.status(200).json({ success: true, rekomendasi });
+        const response = await Rekomendasi.findOne({
+          where: { userId: req.params.id },
+        });
+        res.status(200).json({ success: true, response });
       } else {
-        const response = await Rekomendasi.create({ userId: id });
+        const response = await Rekomendasi.create({
+          userId: id,
+          lokasi,
+          pesan: message,
+        });
         res.status(200).json({ success: true, response });
       }
     } catch (error) {
@@ -174,6 +203,8 @@ export const forecastAPI = asyncHandler(
       const coordinatesBandung = await getCoordinates('Semarang');
       const coordinatesJakarta = await getCoordinates('Jakarta');
       const coordinatesSemarang = await getCoordinates('Semarang');
+      const date = new Date();
+      date.setDate(date.getDate());
 
       // Get AQI data
       const dataPrevBdg = await getPreviousDaysAQI(
@@ -201,7 +232,7 @@ export const forecastAPI = asyncHandler(
       const foreCastDataSemarang = extractForecastData(
         getDataForecastSemarang(),
       );
-
+      // Get current data AQI
       const currentDataBdg = await callAQIAPI(
         coordinatesBandung.lng,
         coordinatesBandung.lat,
@@ -214,19 +245,20 @@ export const forecastAPI = asyncHandler(
         coordinatesSemarang.lng,
         coordinatesSemarang.lat,
       );
+      // Create data object for AQI
       const dataSemarang = {
-        PastDataAQI: pastDataBdg,
-        currentDataAQI: currentDataSemarang.indexes[0],
+        PastDataAQI: pastDataSemarang,
+        currentDataAQI: (currentDataSemarang.indexes[0], date),
         foreCastAQI: foreCastDataSemarang,
       };
       const dataJkt = {
         PastDataAQI: pastDataJkt,
-        currentDataAQI: currentDataJkt.indexes[0],
+        currentDataAQI: (currentDataJkt.indexes[0], date),
         foreCastAQI: foreCastDataJkt,
       };
       const dataBdg = {
         PastDataAQI: pastDataBdg,
-        currentDataAQI: currentDataBdg.indexes[0],
+        currentDataAQI: (currentDataBdg.indexes[0], date),
         foreCastAQI: foreCastDataBdg,
       };
       res.status(200).json({
