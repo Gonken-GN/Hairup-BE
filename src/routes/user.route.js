@@ -1,4 +1,5 @@
 import express from 'express';
+import multer from 'multer';
 import {
   createUser,
   deleteUser,
@@ -7,9 +8,11 @@ import {
   updateUser,
 } from '../controllers/user.controller.js';
 
+const multerStorage = multer.memoryStorage();
+const upload = multer({ storage: multerStorage });
 const router = express.Router();
 
-router.post('/', createUser);
+router.post('/', upload.single('avatar'), createUser);
 router.get('/:id', getUserById);
 router.get('/', getUsers);
 router.put('/:id', updateUser);
