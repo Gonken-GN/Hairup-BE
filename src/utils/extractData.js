@@ -26,12 +26,21 @@ function extractForecastData(foreCastData) {
   }
   return extractedForecastData;
 }
+
+function extractForecastWeatherData(foreCastData) {
+  const extractedForecastData = [];
+  // eslint-disable-next-line guard-for-in
+  for (const key in foreCastData.predictions) {
+    extractedForecastData.push(foreCastData.predictions[key]);
+  }
+  return extractedForecastData;
+}
 function extractPastData(data) {
   const indexesData = [];
   let i = 1;
   // eslint-disable-next-line guard-for-in
   for (const key in data) {
-    let date = formatDateAfter(i);
+    const date = formatDateAfter(i);
     data[key].hoursInfo.forEach((hourInfo) => {
       indexesData.push(...hourInfo.indexes);
     });
@@ -52,5 +61,9 @@ function extractDataByUserInput(jsonData, userInput) {
   return null; // Or handle the case where the key doesn't exist
 }
 export {
-  extractForecastData, findMaxAqiForHour, extractPastData, extractDataByUserInput,
+  extractForecastData,
+  findMaxAqiForHour,
+  extractPastData,
+  extractDataByUserInput,
+  extractForecastWeatherData,
 };
