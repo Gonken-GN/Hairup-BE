@@ -24,6 +24,7 @@ import {
 import {
   extractDataByUserInput,
   extractForecastData,
+  extractForecastWeatherData,
   extractPastData,
   findMaxAqiForHour,
 } from '../utils/extractData.js';
@@ -318,9 +319,15 @@ export const forecastWeatherAPI = asyncHandler(
       );
 
       // call forecast weather data
-      const foreCastDataWeatherBdg = getDataForecastWeatherBdg();
-      const foreCastDataWeatherJkt = getDataForecastWeatherJkt();
-      const foreCastDataWeatherSemarang = getDataForecastWeatherSemarang();
+      const foreCastDataWeatherBdg = extractForecastWeatherData(
+        getDataForecastWeatherBdg(),
+      );
+      const foreCastDataWeatherJkt = extractForecastWeatherData(
+        getDataForecastWeatherJkt(),
+      );
+      const foreCastDataWeatherSemarang = extractForecastWeatherData(
+        getDataForecastWeatherSemarang(),
+      );
 
       const dataWeatherBandung = {
         PastDataWeather: dataPrevWeatherBdg,
